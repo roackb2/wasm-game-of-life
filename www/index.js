@@ -7,4 +7,4 @@ const eventLoop = () => {
   contentElem.innerHTML = universe.render()
 }
 
-setInterval(eventLoop, 1000)
+setInterval(eventLoop, 30)

@@ -100,7 +100,10 @@ impl Universe {
         let height = 64;
 
         let cells = (0..width * height).map(|i| {
-            if i % 2 == 0 || i % 7 == 0 { Cell::Alive }
+            let row = i / width;
+            let col = i % width;
+            if row > 1 && row < 10 && col > 1 && col < 10 { Cell::Alive }
+            else if row > 2 && row < 11 && col > 2 && col < 11 { Cell::Alive }
             else { Cell::Dead }
         }).collect();
 

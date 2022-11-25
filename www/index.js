@@ -1,3 +1,10 @@
-import * as wasm from "wasm-game-of-life";
+import { Universe } from "wasm-game-of-life";
 
-wasm.greet("roackb2");
+let universe = Universe.new();
+const eventLoop = () => {
+  const contentElem = document.getElementById('content')
+  universe.tick()
+  contentElem.innerHTML = universe.render()
+}
+
+setInterval(eventLoop, 1000)

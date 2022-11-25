@@ -1,5 +1,6 @@
 mod utils;
 
+use std::fmt;
 use wasm_bindgen::prelude::*;
 
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
@@ -40,12 +41,73 @@ impl Universe {
                 if delta_row == 0 && delta_col == 0 {
                     continue
                 }
-                let neighbor_row = row + delta_row % self.width;
-                let neighbor_col = column + delta_col % self.height;
+                let neighbor_row = (row + delta_row) % self.height;
+                let neighbor_col = (column + delta_col) % self.width;
                 let idx = self.get_index(neighbor_row, neighbor_col);
                 count += self.cells[idx] as u8;
             }
         }
         count
+    }
+}
+
+#[wasm_bindgen]
+impl Universe {
+    pub fn tick(&mut self) {
+        let mut next = self.cells.clone();
+
+        for row in 0..self.height {
+            for col in 0..self.width {
+                let idx = self.get_index(row, col);
+                let cell = self.cells[idx];
+                let neighbor_count =  self.live_neighbor_count(row, col);
+                let next_cell = match cell {
+                    Cell::Alive => {
+                        if neighbor_count < 2 { Cell::Dead }
+                        else if neighbor_count > 3 { Cell::Alive }
+                        else { Cell::Dead }
+                    }
+                    Cell::Dead => {
+                        if neighbor_count == 3 { Cell::Alive }
+                        else { Cell::Dead }
+                    }
+                };
+                next[idx] = next_cell;
+            }
+        }
+        self.cells = next;
+    }
+}
+
+impl fmt::Display for Universe {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        for line in self.cells.as_slice().chunks(self.width as usize) {
+            for &cell in line {
+                let symbol = if cell == Cell::Dead { '◻' } else { '◼' };
+                write!(f, "{}", symbol)?;
+            }
+            write!(f, "\n")?;
+        }
+
+        Ok(())
+    }
+}
+
+#[wasm_bindgen]
+impl Universe {
+    pub fn new() -> Universe {
+        let width = 64;
+        let height = 64;
+
+        let cells = (0..width * height).map(|i| {
+            if i % 2 == 0 || i % 7 == 0 { Cell::Alive }
+            else { Cell::Dead }
+        }).collect();
+
+        Universe { width, height, cells, }
+    }
+
+    pub fn render(&self) -> String {
+        self.to_string()
     }
 }

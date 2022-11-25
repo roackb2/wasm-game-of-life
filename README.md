@@ -1,3 +1,15 @@
+## What's this
+
+This is [Conway's Game of Life](https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life) written in [Rust and WebAssembly](https://rustwasm.github.io/docs/book/introduction.html).
+
+The universe and it's iterations is written in rust, then use `wasm-pack build` to build the WASM module.
+
+
+The JavaScript then import the module, get information (width, height, current cells state) about the universe and draw it to canvas.
+
+----
+## Original document for wasm-pack-template
+
 <div align="center">
 
   <h1><code>wasm-pack-template</code></h1>
